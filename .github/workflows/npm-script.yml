@@ -1,0 +1,44 @@
+# TODO: add inputs.working-directory instead of hardcoded .
+
+name: NPM Script
+
+on:
+  workflow_call:
+    inputs:
+      cache-dependency-path:
+        default: './package-lock.json'
+        type: string
+        description: 'Used to specify the path to a dependency file: package-lock.json, yarn.lock, etc. It will generate hash from the target file for primary key. It works only If cache is specified. Supports wildcards or a list of file names for caching multiple dependencies.'
+      script:
+        required: true
+        type: string
+        description: NPM script to run. Value will be used like `npm run <value>`
+
+jobs:
+  npm-run:
+    name: NPM Run "${{inputs.script}}"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          cache: npm
+          node-version-file: .nvmrc
+          registry-url: https://registry.npmjs.org
+          cache-dependency-path: ${{inputs.cache-dependency-path}}
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        id: cache-node-modules
+        with:
+          path: ./node-modules
+          key: modules-${{ hashFiles(inputs.cache-dependency-path) }}
+
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: |
+          npm ci
+
+      - name: Run Script
+        run: |
+          npm run ${{inputs.script}}
