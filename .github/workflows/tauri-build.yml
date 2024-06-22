@@ -80,10 +80,14 @@ jobs:
         run: |
           npm run ${{inputs.script}}
 
+      - name: Set Artifact Path
+        id: set-path
+        run: echo "path=${{ inputs.artifact-path-1 }}-$(if [ ${{ matrix.os }} = 'macos-latest' ]; then echo 'macos'; elif [ ${{ matrix.os }} = 'windows-latest' ]; then echo 'msi'; else echo 'default'; fi)" >> $GITHUB_ENV
+  
       - name: Upload Artifact
         if: ${{ inputs.artifact-name-1 && inputs.artifact-path-1 }}
         uses: actions/upload-artifact@v4
         with:
           retention-days: ${{ inputs.artifact-retention-days }}
-          path: ${{ inputs.artifact-path-1 }}
+          path: ${{ env.path }}
           name: ${{ inputs.artifact-name-1 }}-${{ matrix.os }}
