@@ -1,0 +1,31 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  release:
+    name: Release
+    uses: ./.github/workflows/semantic-release.yml
+
+  bump-major:
+    name: Bump Major Version to Current
+    runs-on: ubuntu-latest
+    needs: [release]
+    if: needs.release.outputs.version != ''
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Set Major Version to the current Release
+      env:
+        VERSION: ${{needs.release.outputs.version}}
+      run: |
+        MAJOR=$(echo "$VERSION" | sed 's/\..*//')
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        git tag "v$MAJOR" --force
+        git push --tags --force

@@ -1,0 +1,56 @@
+name: Semantic Release
+
+on:
+  workflow_call:
+    inputs:
+      dry_run:
+        default: false
+        description: Whether to run semantic release in dry-run mode. It will override the dryRun attribute in your configuration file
+        type: boolean
+        required: false
+    outputs:
+      version:
+        description: "Version created by semantic-release"
+        value: ${{ jobs.semantic-release.outputs.version }}
+      published:
+        description: "Whether a new release was published. The return value is in the form of a string. (`\"true\"` or `\"false\"`)"
+        value: ${{ jobs.semantic-release.outputs.published }}
+
+jobs:
+  semantic-release:
+    name: Semantic Release
+    permissions:
+      contents: write # Publish GitHub release
+      pull-requests: write # Comment on released pull requests
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.semantic.outputs.new_release_version }}
+      published: ${{ steps.semantic.outputs.new_release_published }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        persist-credentials: false
+
+    - name: Semantic Release
+      uses: cycjimmy/semantic-release-action@v4
+      id: semantic
+      with:
+        dry_run: ${{ inputs.dry_run }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        HUSKY: 0
+
+    - name: Job Summary
+      env:
+        VERSION: ${{steps.semantic.outputs.new_release_version}}
+      run: |
+        if [[ -z "$VERSION" ]]; then
+          echo "### No new version needed" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "### New Version > $VERSION" >> $GITHUB_STEP_SUMMARY
+          if "${{ inputs.dry_run }}"; then
+            echo "(not yet created because this was a dry_run)" >> $GITHUB_STEP_SUMMARY
+          fi
+        fi
