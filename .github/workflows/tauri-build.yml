@@ -10,13 +10,14 @@ on:
         description: 'Artifact retention in days'
         type: number
         required: false
-      artifact-name-1:
-        description: Artifact name (1) Requires `artifact-path-1`.
+      artifact-name:
+        default: bundle
+        description: Artifact name. Requires `bundle-folder`.
         required: false
         type: string
-      artifact-path-1:
-        description: Artifact path (1) Requires `artifact-name-1`.
-        required: false
+      bundle-folder:
+        description: Artifact path. . Requires `artifact-name`.
+        required: true
         type: string
       cache-dependency-path:
         default: ./package-lock.json
@@ -82,12 +83,12 @@ jobs:
 
       - name: Set Artifact Path
         id: set-path
-        run: echo "path=${{ inputs.artifact-path-1 }}-$(if [ ${{ matrix.os }} = 'macos-latest' ]; then echo 'macos'; elif [ ${{ matrix.os }} = 'windows-latest' ]; then echo 'msi'; else echo 'default'; fi)" >> $GITHUB_ENV
+        run: echo "path=${{ inputs.bundle-folder }}/$(if [ ${{ matrix.os }} = 'macos-latest' ]; then echo 'macos'; elif [ ${{ matrix.os }} = 'windows-latest' ]; then echo 'msi'; else echo 'default'; fi)" >> $GITHUB_ENV
   
       - name: Upload Artifact
-        if: ${{ inputs.artifact-name-1 && inputs.artifact-path-1 }}
+        if: ${{ inputs.artifact-name && inputs.bundle-folder }}
         uses: actions/upload-artifact@v4
         with:
           retention-days: ${{ inputs.artifact-retention-days }}
           path: ${{ env.path }}
-          name: ${{ inputs.artifact-name-1 }}-${{ matrix.os }}
+          name: ${{ inputs.artifact-name }}-${{ matrix.os }}
