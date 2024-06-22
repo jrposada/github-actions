@@ -16,8 +16,9 @@ on:
         required: false
         type: string
       bundle-folder:
+        default: ./src-tauri/target/release/bundle
         description: Artifact path. . Requires `artifact-name`.
-        required: true
+        required: false
         type: string
       cache-dependency-path:
         default: ./package-lock.json
