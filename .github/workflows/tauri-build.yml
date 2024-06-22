@@ -12,12 +12,12 @@ on:
         required: false
       artifact-name:
         default: bundle
-        description: Artifact name. Requires `bundle-folder`.
+        description: Artifact name.
         required: false
         type: string
       bundle-folder:
         default: ./src-tauri/target/release/bundle
-        description: Artifact path. . Requires `artifact-name`.
+        description: Artifact path.
         required: false
         type: string
       cache-dependency-path:
