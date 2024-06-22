@@ -43,6 +43,7 @@ jobs:
 
       - name: Debug
         run: |
+          rustup 1.78.0
           rustc --version
       # - name: Set up Rust
       #   uses: actions-rs/toolchain@v1
