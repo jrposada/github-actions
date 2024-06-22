@@ -84,8 +84,15 @@ jobs:
 
       - name: Set Artifact Path
         id: set-path
-        run: echo "path=${{ inputs.bundle-folder }}/$(if [ ${{ matrix.os }} = 'macos-latest' ]; then echo 'macos'; elif [ ${{ matrix.os }} = 'windows-latest' ]; then echo 'msi'; else echo 'default'; fi)" >> $GITHUB_ENV
-  
+        run: |
+          if [ "${{ matrix.os }}" = "macos-latest" ]; then
+            echo "path=${{ inputs.bundle-folder }}/macos" >> $GITHUB_ENV
+          elif [ "${{ matrix.os }}" = "windows-latest" ]; then
+            echo "path=${{ inputs.bundle-folder }}/msi" >> $GITHUB_ENV
+          else
+            echo "path=${{ inputs.bundle-folder }}/default" >> $GITHUB_ENV
+          fi
+
       - name: Upload Artifact
         if: ${{ inputs.artifact-name && inputs.bundle-folder }}
         uses: actions/upload-artifact@v4
