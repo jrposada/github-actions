@@ -33,8 +33,11 @@ on:
 
 jobs:
   npm-run:
-    name: NPM Run "${{inputs.script}}"
-    runs-on: ubuntu-latest
+    name: NPM Run "${{inputs.script}}" on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -48,18 +51,18 @@ jobs:
         run: |
           rustup default ${{inputs.rust-version}}
 
-      - name: Set up Tauri
-        run: |
-          sudo apt update
-          sudo apt install libwebkit2gtk-4.0-dev \
-            build-essential \
-            curl \
-            wget \
-            file \
-            libssl-dev \
-            libgtk-3-dev \
-            libayatana-appindicator3-dev \
-            librsvg2-dev
+      # - name: Set up Tauri on MacOS
+      #   run: |
+      #     sudo apt update
+      #     sudo apt install libwebkit2gtk-4.0-dev \
+      #       build-essential \
+      #       curl \
+      #       wget \
+      #       file \
+      #       libssl-dev \
+      #       libgtk-3-dev \
+      #       libayatana-appindicator3-dev \
+      #       librsvg2-dev
 
       - name: Cache node_modules
         uses: actions/cache@v4
@@ -77,10 +80,10 @@ jobs:
         run: |
           npm run ${{inputs.script}}
 
-      - name: Upload Artifact (1)
+      - name: Upload Artifact
         if: ${{ inputs.artifact-name-1 && inputs.artifact-path-1 }}
         uses: actions/upload-artifact@v4
         with:
           retention-days: ${{ inputs.artifact-retention-days }}
           path: ${{ inputs.artifact-path-1 }}
-          name: ${{ inputs.artifact-name-1 }}
+          name: ${{ inputs.artifact-name-1 }}-${{ matrix.os }}
