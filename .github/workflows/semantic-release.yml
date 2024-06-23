@@ -27,7 +27,7 @@ on:
         description: Artifact path (3) Requires `artifact-name-3`.
         required: false
         type: string
-      dry_run:
+      dry-run:
         default: false
         description: Whether to run semantic release in dry-run mode. It will override the dryRun attribute in your configuration file
         type: boolean
