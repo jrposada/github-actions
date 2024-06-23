@@ -1,0 +1,88 @@
+# TODO: add inputs.working-directory instead of hardcoded .
+
+name: NPM Script
+
+on:
+  workflow_call:
+    inputs:
+      artifact-retention-days:
+        default: 5
+        description: 'Artifact retention in days'
+        type: number
+        required: false
+      artifact-name:
+        default: bundle
+        description: Artifact name.
+        required: false
+        type: string
+      bundle-folder:
+        default: ./src-tauri/target/release/bundle
+        description: Artifact path.
+        required: false
+        type: string
+      cache-dependency-path:
+        default: ./package-lock.json
+        description: 'Used to specify the path to a dependency file: package-lock.json, yarn.lock, etc. It will generate hash from the target file for primary key. It works only If cache is specified. Supports wildcards or a list of file names for caching multiple dependencies.'
+        type: string
+      rust-version:
+        default: 1.78.0
+        description: Rust version
+        type: string
+      script:
+        description: NPM script to run. Value will be used like `npm run <value>`
+        required: true
+        type: string
+
+jobs:
+  npm-run:
+    name: NPM Run "${{inputs.script}}" on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          cache: npm
+          node-version-file: .nvmrc
+          registry-url: https://registry.npmjs.org
+          cache-dependency-path: ${{inputs.cache-dependency-path}}
+
+      - name: Set up Rust
+        run: |
+          rustup default ${{inputs.rust-version}}
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        id: cache-node-modules
+        with:
+          path: ./node-modules
+          key: modules-${{ hashFiles(inputs.cache-dependency-path) }}
+
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: |
+          npm ci
+
+      - name: Run Script
+        run: |
+          npm run ${{inputs.script}}
+
+      - name: Set bundle path for macOS
+        if: matrix.os == 'macos-latest'
+        run: echo "path=${{ inputs.bundle-folder }}/dmg" >> $GITHUB_ENV
+        shell: bash
+        
+      - name: Set bundle path for Windows
+        if: matrix.os == 'windows-latest'
+        run: echo "path=${{ inputs.bundle-folder }}/msi" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Upload Artifact
+        if: ${{ inputs.artifact-name && inputs.bundle-folder }}
+        uses: actions/upload-artifact@v4
+        with:
+          retention-days: ${{ inputs.artifact-retention-days }}
+          path: ${{ env.path }}
+          name: ${{ inputs.artifact-name }}-${{ matrix.os }}
