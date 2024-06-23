@@ -27,7 +27,7 @@ on:
         description: Artifact path (3) Requires `artifact-name-3`.
         required: false
         type: string
-      dry_run:
+      dry-run:
         default: false
         description: Whether to run semantic release in dry-run mode. It will override the dryRun attribute in your configuration file
         type: boolean
@@ -82,7 +82,7 @@ jobs:
       uses: cycjimmy/semantic-release-action@v4
       id: semantic
       with:
-        dry_run: ${{ inputs.dry_run }}
+        dry_run: ${{ inputs.dry-run }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         HUSKY: 0
@@ -95,7 +95,7 @@ jobs:
           echo "### No new version needed" >> $GITHUB_STEP_SUMMARY
         else
           echo "### New Version > $VERSION" >> $GITHUB_STEP_SUMMARY
-          if "${{ inputs.dry_run }}"; then
+          if "${{ inputs.dry-run }}"; then
             echo "(not yet created because this was a dry_run)" >> $GITHUB_STEP_SUMMARY
           fi
         fi
