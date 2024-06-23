@@ -72,11 +72,12 @@ jobs:
       - name: Set bundle path for macOS
         if: matrix.os == 'macos-latest'
         run: echo "path=${{ inputs.bundle-folder }}/macos" >> $GITHUB_ENV
-
+        shell: bash
+        
       - name: Set bundle path for Windows
         if: matrix.os == 'windows-latest'
         run: echo "path=${{ inputs.bundle-folder }}/msi" >> $GITHUB_ENV
-        shell: cmd
+        shell: bash
 
       - name: Upload Artifact
         if: ${{ inputs.artifact-name && inputs.bundle-folder }}
