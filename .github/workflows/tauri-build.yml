@@ -69,6 +69,7 @@ jobs:
 
       - name: Set version
         if: inputs.version != ''
+        shell: bash
         run: |
           VERSION=${{ inputs.version }}
           SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
