@@ -71,7 +71,7 @@ jobs:
 
       - name: Set bundle path for macOS
         if: matrix.os == 'macos-latest'
-        run: echo "path=${{ inputs.bundle-folder }}/macos" >> $GITHUB_ENV
+        run: echo "path=${{ inputs.bundle-folder }}/dmg" >> $GITHUB_ENV
         shell: bash
         
       - name: Set bundle path for Windows
