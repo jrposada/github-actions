@@ -1,5 +1,3 @@
-# TODO: add inputs.working-directory instead of hardcoded .
-
 name: NPM Script
 
 on:
@@ -39,7 +37,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, windows-latest]
+        os: [macos-latest, macos-13, windows-latest]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -70,7 +68,7 @@ jobs:
           npm run ${{inputs.script}}
 
       - name: Set bundle path for macOS
-        if: matrix.os == 'macos-latest'
+        if: matrix.os == 'macos-latest' || matrix.os == 'macos-13'
         run: echo "path=${{ inputs.bundle-folder }}/dmg" >> $GITHUB_ENV
         shell: bash
         
