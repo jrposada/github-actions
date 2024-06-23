@@ -72,10 +72,9 @@ jobs:
         shell: bash
         run: |
           VERSION=${{ inputs.version }}
-          SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 
           # Update version in tauri.conf.json
-          TAURI_FILEPATH="$SCRIPT_DIR/../src-tauri/tauri.conf.json"
+          TAURI_FILEPATH="./src-tauri/tauri.conf.json"
           if [ -f "$TAURI_FILEPATH" ]; then
             sed -i.bak -E "s/\"version\": \".*\"/\"version\": \"$VERSION\"/" $TAURI_FILEPATH
             echo "Updated version in $TAURI_FILEPATH to $VERSION"
@@ -93,7 +92,7 @@ jobs:
           fi
 
           # Cleanup backup files
-          rm -f $SCRIPT_DIR/../src-tauri/tauri.conf.json.bak package.json.bak
+          rm -f ./src-tauri/tauri.conf.json.bak package.json.bak
 
           echo "Version update complete."
 
