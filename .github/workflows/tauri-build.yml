@@ -53,19 +53,6 @@ jobs:
         run: |
           rustup default ${{inputs.rust-version}}
 
-      # - name: Set up Tauri on MacOS
-      #   run: |
-      #     sudo apt update
-      #     sudo apt install libwebkit2gtk-4.0-dev \
-      #       build-essential \
-      #       curl \
-      #       wget \
-      #       file \
-      #       libssl-dev \
-      #       libgtk-3-dev \
-      #       libayatana-appindicator3-dev \
-      #       librsvg2-dev
-
       - name: Cache node_modules
         uses: actions/cache@v4
         id: cache-node-modules
@@ -82,16 +69,14 @@ jobs:
         run: |
           npm run ${{inputs.script}}
 
-      - name: Set Artifact Path
-        id: set-path
-        run: |
-          if [ "${{ matrix.os }}" = "macos-latest" ]; then
-            echo "path=${{ inputs.bundle-folder }}/macos" >> $GITHUB_ENV
-          elif [ "${{ matrix.os }}" = "windows-latest" ]; then
-            echo "path=${{ inputs.bundle-folder }}/msi" >> $GITHUB_ENV
-          else
-            echo "path=${{ inputs.bundle-folder }}/default" >> $GITHUB_ENV
-          fi
+      - name: Set bundle path for macOS
+        if: matrix.os == 'macos-latest'
+        run: echo "path=${{ inputs.bundle-folder }}/macos" >> $GITHUB_ENV
+
+      - name: Set bundle path for Windows
+        if: matrix.os == 'windows-latest'
+        run: echo "path=${{ inputs.bundle-folder }}/msi" >> $GITHUB_ENV
+        shell: cmd
 
       - name: Upload Artifact
         if: ${{ inputs.artifact-name && inputs.bundle-folder }}
