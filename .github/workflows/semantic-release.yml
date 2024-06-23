@@ -3,6 +3,30 @@ name: Semantic Release
 on:
   workflow_call:
     inputs:
+      artifact-name-1:
+        description: Artifact name (1) Requires `artifact-path-1`.
+        required: false
+        type: string
+      artifact-path-1:
+        description: Artifact path (1) Requires `artifact-name-1`.
+        required: false
+        type: string
+      artifact-name-2:
+        description: Artifact name (2) Requires `artifact-path-2`.
+        required: false
+        type: string
+      artifact-path-2:
+        description: Artifact path (2) Requires `artifact-name-2`.
+        required: false
+        type: string
+      artifact-name-3:
+        description: Artifact name (3) Requires `artifact-path-3`.
+        required: false
+        type: string
+      artifact-path-3:
+        description: Artifact path (3) Requires `artifact-name-3`.
+        required: false
+        type: string
       dry_run:
         default: false
         description: Whether to run semantic release in dry-run mode. It will override the dryRun attribute in your configuration file
@@ -32,6 +56,27 @@ jobs:
       with:
         fetch-depth: 0
         persist-credentials: false
+
+    - name: Download Artifact (1)
+      if: ${{ inputs.artifact-name-1 && inputs.artifact-path-1 }}
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{ inputs.artifact-name-1 }}
+        path: ${{ inputs.artifact-path-1 }}
+
+    - name: Download Artifact (2)
+      if: ${{ inputs.artifact-name-2 && inputs.artifact-path-2 }}
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{ inputs.artifact-name-2 }}
+        path: ${{ inputs.artifact-path-2 }}
+
+    - name: Download Artifact (3)
+      if: ${{ inputs.artifact-name-3 && inputs.artifact-path-3 }}
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{ inputs.artifact-name-3 }}
+        path: ${{ inputs.artifact-path-3 }}
 
     - name: Semantic Release
       uses: cycjimmy/semantic-release-action@v4
