@@ -70,14 +70,7 @@ jobs:
       - name: Set version
         if: inputs.version != ''
         run: |
-          # Check if the version argument is provided
-          if [ -z "$1" ]; then
-            echo "Error: Version argument is required."
-            echo "Usage: $0 <version>"
-            exit 1
-          fi
-
-          VERSION=$1
+          VERSION=${{ inputs.version }}
           SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 
           # Update version in tauri.conf.json
