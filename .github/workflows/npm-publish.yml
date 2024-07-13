@@ -6,6 +6,9 @@ on:
       version:
         type: string
         description: 'Package version. It will be written in package.json'
+    secrets:
+      NPM_TOKEN:
+        required: true
 
 jobs:
   publish-npm:
