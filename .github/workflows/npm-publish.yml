@@ -3,6 +3,14 @@ name: Publish package
 on:
   workflow_call:
     inputs:
+      artifact-name:
+        description: Artifact name. Requires `artifact-path`.
+        required: false
+        type: string
+      artifact-path:
+        description: Artifact path. Requires `artifact-name`.
+        required: false
+        type: string
       version:
         type: string
         description: 'Package version. It will be written in package.json'
@@ -20,6 +28,13 @@ jobs:
           node-version-file: .nvmrc
           registry-url: 'https://registry.npmjs.org'
           cache: npm
+
+      - name: Download Artifact
+        if: ${{ inputs.artifact-name && inputs.artifact-path }}
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.artifact-name }}
+          path: ${{ inputs.artifact-path }}
 
       - name: Set version
         if: inputs.version

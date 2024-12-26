@@ -8,12 +8,12 @@ on:
         description: 'Artifact retention in days'
         type: number
         required: false
-      artifact-name-1:
-        description: Artifact name (1) Requires `artifact-path-1`.
+      artifact-name:
+        description: Artifact name. Requires `artifact-path`.
         required: false
         type: string
-      artifact-path-1:
-        description: Artifact path (1) Requires `artifact-name-1`.
+      artifact-path:
+        description: Artifact path. Requires `artifact-name`.
         required: false
         type: string
       cache-dependency-path:
@@ -54,10 +54,10 @@ jobs:
         run: |
           npm run ${{inputs.script}}
 
-      - name: Upload Artifact (1)
-        if: ${{ inputs.artifact-name-1 && inputs.artifact-path-1 }}
+      - name: Upload Artifact
+        if: ${{ inputs.artifact-name && inputs.artifact-path }}
         uses: actions/upload-artifact@v4
         with:
           retention-days: ${{ inputs.artifact-retention-days }}
-          path: ${{ inputs.artifact-path-1 }}
-          name: ${{ inputs.artifact-name-1 }}
+          path: ${{ inputs.artifact-path }}
+          name: ${{ inputs.artifact-name }}
