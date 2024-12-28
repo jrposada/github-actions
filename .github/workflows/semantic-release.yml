@@ -16,6 +16,9 @@ on:
         description: Whether to run semantic release in dry-run mode. It will override the dryRun attribute in your configuration file
         type: boolean
         required: false
+    secrets:
+      NPM_TOKEN:
+        required: false
     outputs:
       version:
         description: "Version created by semantic-release"
@@ -54,6 +57,7 @@ jobs:
       with:
         dry_run: ${{ inputs.dry-run }}
       env:
+        NPM_TOKEN: ${{ secrets.NPM_TOKEN}}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         HUSKY: 0
 
